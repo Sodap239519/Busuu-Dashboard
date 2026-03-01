@@ -127,6 +127,7 @@ The importer reads the following sheets automatically:
 
 | Sheet name | Data imported | Key columns |
 |---|---|---|
+| `รายชื่อ` (Roster) | `users` roster fields (upsert by email) | `**e-mail`, `TEAM`, `ชื่อ-นามสกุล (EN/TH)`, `รหัสนักศึกษา/ตำแหน่ง`, `คณะ/หน่วยงาน`, `สาขา`, `ผู้ใช้งาน`, `Status` |
 | `course-completion-rate` | `learning_sessions` (upsert by user + course + date) | `email`, `course`, `last_active_on` (DD/MM/YYYY), `learning_time` (hh:mm:ss), `xp`, `completion_rate` |
 | `Student-Progress-Report` | `user_progress` (upsert by user + course) | `email`, `course`, `lessons_completed`, `progress` (%) |
 | `achievement-Placement test` | `achievements` (firstOrCreate by user + name + type) | `email`, `course`, `date` |
@@ -134,6 +135,7 @@ The importer reads the following sheets automatically:
 | `TOP5` | _(ignored)_ | – |
 
 **Notes:**
+- The `รายชื่อ` (Roster) sheet is processed first; it upserts `users` rows and populates `busuu_status` (Active/Pending), team, faculty, major, and name fields.  Licence counts can be derived from `busuu_status`: total licences = all roster rows, in-use = Active, pending = Pending.
 - Users and courses that do not yet exist in the database are created automatically.
 - Re-importing the same workbook is safe (idempotent) — no duplicate rows are created.
 - `learning_time` may be a `hh:mm:ss` string or an Excel fractional-day number; both are handled.
@@ -185,7 +187,7 @@ The importer reads the following sheets automatically:
 
 ## 📊 Database Schema
 
-- **users** – name, email, password, role (user/admin), avatar
+- **users** – name, email, password, role (user/admin), avatar; roster fields: team, faculty, major, external_ref, busuu_user_group, busuu_status (Active/Pending), busuu_name_en, busuu_name_th, last_imported_at
 - **courses** – name, language, level, description, total_lessons, estimated_hours, icon, color
 - **lessons** – course_id, title, order, type, duration_minutes
 - **user_progress** – user_id, course_id, lessons_completed, progress_percentage

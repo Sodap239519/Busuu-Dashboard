@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Imports\Sheets\AchievementSheet;
 use App\Imports\Sheets\CourseCompletionRateSheet;
+use App\Imports\Sheets\RosterSheet;
 use App\Imports\Sheets\StudentProgressSheet;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
@@ -13,6 +14,7 @@ class MonthlyReportImport implements WithMultipleSheets
     private StudentProgressSheet $progressSheet;
     private AchievementSheet $placementSheet;
     private AchievementSheet $certificateSheet;
+    private RosterSheet $rosterSheet;
 
     public function __construct(private string $importId)
     {
@@ -20,11 +22,13 @@ class MonthlyReportImport implements WithMultipleSheets
         $this->progressSheet    = new StudentProgressSheet($this->importId);
         $this->placementSheet   = new AchievementSheet('Placement Test', $this->importId);
         $this->certificateSheet = new AchievementSheet('Certificate', $this->importId);
+        $this->rosterSheet      = new RosterSheet($this->importId);
     }
 
     public function sheets(): array
     {
         return [
+            'รายชื่อ'                      => $this->rosterSheet,
             'course-completion-rate'      => $this->completionSheet,
             'Student-Progress-Report'     => $this->progressSheet,
             'achievement-Placement test'  => $this->placementSheet,
@@ -34,7 +38,8 @@ class MonthlyReportImport implements WithMultipleSheets
 
     public function getRowCount(): int
     {
-        return $this->completionSheet->rowCount
+        return $this->rosterSheet->rowCount
+            + $this->completionSheet->rowCount
             + $this->progressSheet->rowCount
             + $this->placementSheet->rowCount
             + $this->certificateSheet->rowCount;
