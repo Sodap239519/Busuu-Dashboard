@@ -34,7 +34,7 @@ class RunMonthlyReportImport implements ShouldQueue
 
         try {
             // ให้ sheets เป็นตัว chunk (คุณใส่ WithChunkReading ใน sheets แล้ว)
-            Excel::import(new MonthlyReportImport(), Storage::disk($this->disk)->path($this->path));
+            Excel::import(new MonthlyReportImport($this->importId), Storage::disk($this->disk)->path($this->path));
 
             // หมายเหตุ: rowCount จาก queued จะนับยาก (เพราะอยู่คนละ process)
             // ตั้งไว้ 0 หรือค่อยคำนวณจาก DB ทีหลัง

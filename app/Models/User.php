@@ -23,6 +23,15 @@ class User extends Authenticatable
         'password',
         'role',
         'avatar',
+        'team',
+        'faculty',
+        'major',
+        'external_ref',
+        'busuu_user_group',
+        'busuu_status',
+        'busuu_name_en',
+        'busuu_name_th',
+        'last_imported_at',
     ];
 
     /**
