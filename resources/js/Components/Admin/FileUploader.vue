@@ -31,6 +31,7 @@
       <select v-model="importType" class="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="sessions">Learning Sessions</option>
         <option value="courses">Courses</option>
+        <option value="monthly_report">Monthly Report (Busuu)</option>
       </select>
     </div>
 

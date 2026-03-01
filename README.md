@@ -121,6 +121,24 @@ name,language,level,description,total_lessons,estimated_hours,icon,color
 English C1,English,C1,Advanced English,35,25,🇬🇧,#1D4ED8
 ```
 
+### Monthly Report – Busuu Workbook (`monthly_report`)
+Upload a single `.xlsx` workbook exported from Busuu (e.g. `NRRU Busuu Monthly-progress-Report.xlsx`).
+The importer reads the following sheets automatically:
+
+| Sheet name | Data imported | Key columns |
+|---|---|---|
+| `course-completion-rate` | `learning_sessions` (upsert by user + course + date) | `email`, `course`, `last_active_on` (DD/MM/YYYY), `learning_time` (hh:mm:ss), `xp`, `completion_rate` |
+| `Student-Progress-Report` | `user_progress` (upsert by user + course) | `email`, `course`, `lessons_completed`, `progress` (%) |
+| `achievement-Placement test` | `achievements` (firstOrCreate by user + name + type) | `email`, `course`, `date` |
+| `achievement-Certificate` | `achievements` (firstOrCreate by user + name + type) | `email`, `course`, `date` |
+| `TOP5` | _(ignored)_ | – |
+
+**Notes:**
+- Users and courses that do not yet exist in the database are created automatically.
+- Re-importing the same workbook is safe (idempotent) — no duplicate rows are created.
+- `learning_time` may be a `hh:mm:ss` string or an Excel fractional-day number; both are handled.
+- Rows missing an `email` value are skipped silently.
+
 ---
 
 ## 🗂️ Project Structure

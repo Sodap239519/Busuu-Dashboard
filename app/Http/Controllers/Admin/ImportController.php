@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Imports\CoursesImport;
 use App\Imports\LearningSessionsImport;
+use App\Imports\MonthlyReportImport;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
@@ -18,7 +19,7 @@ class ImportController extends Controller {
     public function upload(Request $request) {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240',
-            'type' => 'required|in:sessions,courses',
+            'type' => 'required|in:sessions,courses,monthly_report',
         ]);
 
         $file = $request->file('file');
@@ -30,6 +31,11 @@ class ImportController extends Controller {
                 Excel::import($import, $file);
                 $rowCount = $import->rowCount;
                 $message = "Successfully imported {$rowCount} learning sessions.";
+            } elseif ($request->type === 'monthly_report') {
+                $import = new MonthlyReportImport();
+                Excel::import($import, $file);
+                $rowCount = $import->getRowCount();
+                $message = "Successfully imported {$rowCount} records from monthly report.";
             } else {
                 $import = new CoursesImport();
                 Excel::import($import, $file);
