@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Imports;
 
 use App\Imports\Sheets\AchievementSheet;
@@ -13,18 +14,14 @@ class MonthlyReportImport implements WithMultipleSheets
     private AchievementSheet $placementSheet;
     private AchievementSheet $certificateSheet;
 
-    public function __construct()
+    public function __construct(private string $importId)
     {
-        $this->completionSheet  = new CourseCompletionRateSheet();
-        $this->progressSheet    = new StudentProgressSheet();
-        $this->placementSheet   = new AchievementSheet('Placement Test');
-        $this->certificateSheet = new AchievementSheet('Certificate');
+        $this->completionSheet  = new CourseCompletionRateSheet($this->importId);
+        $this->progressSheet    = new StudentProgressSheet($this->importId);
+        $this->placementSheet   = new AchievementSheet('Placement Test', $this->importId);
+        $this->certificateSheet = new AchievementSheet('Certificate', $this->importId);
     }
 
-    /**
-     * Map Busuu monthly report sheet names to their respective import classes.
-     * Maatwebsite/Excel matches sheet names case-insensitively.
-     */
     public function sheets(): array
     {
         return [

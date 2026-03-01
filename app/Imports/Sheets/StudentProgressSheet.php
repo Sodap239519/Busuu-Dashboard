@@ -1,16 +1,19 @@
 <?php
+
 namespace App\Imports\Sheets;
 
 use App\Models\Course;
 use App\Models\User;
 use App\Models\UserProgress;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class StudentProgressSheet implements ToCollection, WithHeadingRow
+class StudentProgressSheet implements ToCollection, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     public int $rowCount = 0;
 
@@ -62,5 +65,10 @@ class StudentProgressSheet implements ToCollection, WithHeadingRow
 
             $this->rowCount++;
         }
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }

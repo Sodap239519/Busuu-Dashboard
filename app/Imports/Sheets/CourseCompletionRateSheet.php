@@ -1,17 +1,20 @@
 <?php
+
 namespace App\Imports\Sheets;
 
 use App\Models\Course;
 use App\Models\LearningSession;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class CourseCompletionRateSheet implements ToCollection, WithHeadingRow
+class CourseCompletionRateSheet implements ToCollection, WithHeadingRow, WithChunkReading, ShouldQueue
 {
     public int $rowCount = 0;
 
@@ -50,8 +53,8 @@ class CourseCompletionRateSheet implements ToCollection, WithHeadingRow
             }
 
             $durationMinutes = $this->parseDurationMinutes($row['learning_time'] ?? null);
-            $completionRate = (float) ($row['completion_rate'] ?? $row['completion_rate_'] ?? 0);
-            $xp = (int) ($row['xp'] ?? $row['xp_points'] ?? 0);
+            $completionRate  = (float) ($row['completion_rate'] ?? $row['completion_rate_'] ?? 0);
+            $xp              = (int) ($row['xp'] ?? $row['xp_points'] ?? 0);
 
             LearningSession::updateOrCreate(
                 [
@@ -82,12 +85,14 @@ class CourseCompletionRateSheet implements ToCollection, WithHeadingRow
         try {
             return Carbon::createFromFormat('d/m/Y', $str);
         } catch (\Exception $e) {
+            // ignore
         }
 
         // Fallback to generic parse
         try {
             return Carbon::parse($str);
         } catch (\Exception $e) {
+            // ignore
         }
 
         return null;
@@ -113,5 +118,10 @@ class CourseCompletionRateSheet implements ToCollection, WithHeadingRow
         }
 
         return 0;
+    }
+
+    public function chunkSize(): int
+    {
+        return 1000;
     }
 }
